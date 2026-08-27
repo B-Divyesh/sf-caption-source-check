@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Large-text caption reader — Caption Source Check</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#transcript">Skip to live captions</a>
+    <header class="reader-header">
+      <div class="reader-brand"><span class="brand-mark" aria-hidden="true"></span><span>Caption Source Check</span></div>
+      <div class="reader-tools" aria-label="Reader controls">
+        <button id="smaller" class="tool-button" type="button" aria-label="Make captions smaller">A−</button>
+        <button id="larger" class="tool-button" type="button" aria-label="Make captions larger">A+</button>
+        <button id="contrast" class="tool-button" type="button" aria-pressed="false">High contrast</button>
+        <button id="clear" class="tool-button" type="button">Clear view</button>
+      </div>
+    </header>
+    <main id="main" class="reader-main">
+      <div class="source-line">
+        <div>
+          <p class="eyebrow">Following exposed caption track</p>
+          <h1 id="source-title">Connecting to the video…</h1>
+        </div>
+        <span id="live-pill" class="live-pill" hidden><span aria-hidden="true"></span> Live</span>
+      </div>
+      <section id="reader-status" class="reader-status state--loading" aria-live="polite" aria-busy="true">
+        <span class="status-dot" aria-hidden="true"></span>
+        <p id="reader-status-text">Connecting to the page…</p>
+      </section>
+      <section id="transcript" class="transcript" aria-label="Live caption transcript" aria-live="polite" aria-relevant="additions text"></section>
+      <button id="latest" class="button latest" type="button" hidden>Jump to latest caption</button>
+    </main>
+    <footer class="reader-footer">Captions stay in this window only and are discarded when it closes.</footer>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

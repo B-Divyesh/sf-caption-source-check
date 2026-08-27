@@ -1,0 +1,23 @@
+{
+  "slug": "caption-source-check",
+  "title": "Caption Source Check",
+  "territory": "utilities",
+  "user": "A viewer or event volunteer who needs to know whether a live stream has an official usable caption track and a clean way to follow that track outside a cluttered player.",
+  "evidence": [
+    {
+      "url": "https://hn.algolia.com/api/v1/items/47627691",
+      "date": "2026-04-03",
+      "quote_or_summary": "The asker wants a simple live-updated transcript for NASA communications and reports that obtaining the existing high-quality YouTube subtitles is difficult."
+    },
+    {
+      "url": "https://github.com/Gentleman-Programming/tubemaster/issues/25",
+      "date": "2026-08-23",
+      "quote_or_summary": "A transcript feature request identifies missing captions as a failure case and asks for a local fallback, evidence that caption availability is still unreliable."
+    }
+  ],
+  "smallest_useful_product": "A browser extension that reports whether the current page exposes an official caption track, its language/type and live status, then presents that user-visible track in a simple large-text pane.",
+  "monetization": "free",
+  "constraints": "Read only page/player data the browser already makes available; comply with host terms; no content retention; clearly distinguish machine-generated from human captions when metadata exists.",
+  "artifact_class": "browser-extension",
+  "state": "RESEARCHED"
+}

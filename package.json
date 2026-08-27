@@ -1,0 +1,34 @@
+{
+  "name": "caption-source-check",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:site": "vite --config site/vite.config.ts",
+    "clean": "node scripts/clean.mjs",
+    "build:extension": "wxt build && wxt zip",
+    "build:site": "node scripts/build-site.mjs",
+    "build": "npm run clean && npm run build:extension && npm run build:site",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "preview:site": "vite preview --config site/vite.config.ts --host 127.0.0.1 --port 4173",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@fontsource-variable/inter": "^5.2.6",
+    "@fontsource-variable/newsreader": "^5.2.8",
+    "@playwright/test": "^1.62.1",
+    "@types/chrome": "^0.0.326",
+    "@types/jsdom": "^30.0.0",
+    "jsdom": "^26.1.0",
+    "lighthouse": "^13.4.1",
+    "sharp": "^0.35.4",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4",
+    "wxt": "^0.20.6"
+  }
+}
