@@ -1,0 +1,10 @@
+{
+  "asset": "ceramic-caption-bowl.png",
+  "date": "2026-08-27",
+  "generator": "Azure OpenAI via /opt/fleet/lib/gen-image.sh",
+  "deployment": "factory-image",
+  "size": "1536x1024",
+  "quality": "high",
+  "prompt": "Editorial product still life, glacial minimal ceramics. A hand-built ivory porcelain listening bowl with one thin cobalt glaze line; several small blank translucent frosted-glass ribbons rise gently from the bowl like caption lines; pale celadon shadows; cold northern window light; matte plaster studio sweep; subtle clay imperfections; quiet asymmetrical composition with generous negative space; medium-format product photography, 80mm lens, shallow but readable depth; palette of snow white, porcelain cream, graphite, celadon, one cobalt accent. No people, no screen, no video player, no letters, no text, no watermark, no logos, no brands, no gradients, no neon, no glossy CGI, no extra objects.",
+  "review": "Accepted: coherent ceramic materials, five blank caption-like ribbons, clean silhouette, no text artifacts, unintended symbols, people, brands, or seams."
+}
