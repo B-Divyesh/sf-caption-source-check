@@ -73,9 +73,58 @@ export function installCaptionMonitor(): ScanState {
       videos.forEach((video, videoIndex) => {
         Array.from(video.textTracks || []).forEach((track, trackIndex) => {
           const element = Array.from(video.querySelectorAll('track'))[trackIndex];
-          trackRecords.push({ id: `${videoIndex}:${trackIndex}`, track, element });
+          if (!element || element.readyState !== 3) {
+            trackRecords.push({ id: `${videoIndex}:${trackIndex}`, track, element });
+          }
         });
       });
+
+      // Some players draw their official captions in the page rather than
+      // exposing TextTrack cues. Recognize only explicit, visible player UI.
+      const renderedNodes = Array.from(document.querySelectorAll<HTMLElement>(
+        '.ytp-caption-segment, .player-timedtext-text-container span, [data-testid="closed-caption-text"]'
+      )).filter((element) => element.getClientRects().length > 0);
+      const renderedText = clean([...new Set(renderedNodes.map((element) => clean(element.textContent || '')).filter(Boolean))].join(' '));
+      const captionToggle = document.querySelector<HTMLElement>(
+        '.ytp-subtitles-button:not([aria-disabled="true"]), [data-testid="cc-button"]:not([aria-disabled="true"])'
+      );
+      const exposesRenderedTrack = Boolean(renderedText || (captionToggle && captionToggle.getClientRects().length > 0));
+
+      if (!trackRecords.length && exposesRenderedTrack) {
+        internal.selected = 'rendered:0';
+        const video = videos[0];
+        const at = video && Number.isFinite(video.currentTime) ? video.currentTime : 0;
+        if (renderedText && internal.transcript.at(-1)?.text !== renderedText) {
+          const key = `rendered:${Math.floor(at * 2)}:${renderedText}`;
+          internal.transcript.push({ key, text: renderedText, at });
+          internal.transcript = internal.transcript.slice(-150);
+        }
+        const liveLabel = `${video?.getAttribute('aria-label') || ''} ${document.title}`;
+        const isLive = Boolean(video && (
+          video.duration === Infinity
+          || (!Number.isFinite(video.duration) && video.readyState > 0)
+          || /\blive\b/i.test(liveLabel)
+        ));
+        return {
+          available: true,
+          videoCount: videos.length,
+          tracks: [{
+            id: 'rendered:0',
+            label: 'Player-rendered captions',
+            language: '',
+            kind: 'captions',
+            origin: origin(captionToggle?.getAttribute('aria-label') || '', ''),
+            active: true
+          }],
+          selectedTrackId: 'rendered:0',
+          pageTitle: document.title,
+          pageUrl: location.href,
+          isLive,
+          activeText: renderedText,
+          transcript: [...internal.transcript],
+          scannedAt: Date.now()
+        };
+      }
 
       if (!internal.selected || !trackRecords.some(({ id }) => id === internal.selected)) {
         internal.selected = trackRecords.find(({ track }) => track.mode === 'showing')?.id

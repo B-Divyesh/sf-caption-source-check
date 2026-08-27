@@ -50,4 +50,19 @@ describe('page caption monitor', () => {
     const result = installCaptionMonitor();
     expect(result).toMatchObject({ available: false, videoCount: 1, tracks: [] });
   });
+
+  it('recognizes a visible player-rendered caption without claiming its source', () => {
+    const video = document.querySelector('video')!;
+    Object.defineProperty(video, 'textTracks', { value: [], configurable: true });
+    const segment = document.createElement('span');
+    segment.className = 'ytp-caption-segment';
+    segment.textContent = 'Visible player caption';
+    segment.getClientRects = () => ({ length: 1 } as DOMRectList);
+    document.body.append(segment);
+
+    const result = installCaptionMonitor();
+    expect(result.available).toBe(true);
+    expect(result.activeText).toBe('Visible player caption');
+    expect(result.tracks[0]).toMatchObject({ label: 'Player-rendered captions', origin: 'unknown' });
+  });
 });

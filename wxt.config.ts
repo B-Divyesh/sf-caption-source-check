@@ -12,6 +12,15 @@ export default defineConfig({
     action: {
       default_title: 'Check caption source'
     },
+    commands: {
+      _execute_action: {
+        suggested_key: {
+          default: 'Ctrl+Shift+U',
+          mac: 'MacCtrl+Shift+U'
+        },
+        description: 'Check the current page for exposed captions'
+      }
+    },
     icons: {
       16: 'icons/icon-16.png',
       32: 'icons/icon-32.png',

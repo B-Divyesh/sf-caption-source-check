@@ -29,6 +29,7 @@ Ink on Snowfield and Slate on Snowfield exceed 4.5:1. State colors are always pa
 - Interface and captions: `Inter`, self-hosted variable WOFF2, with system fallbacks. Its open counters hold up at large caption sizes and small metadata sizes.
 - Editorial display: `Newsreader`, self-hosted variable WOFF2, used only for the site headline and the quiet reader empty state. Its soft, carved terminals carry the ceramic metaphor without affecting utility text.
 - Scale: 12 / 14 / 16 / 20 / 28 / 48 px. Body never falls below 16 px on the site; compact extension metadata is 14 px and remains supplementary.
+- Both fonts are distributed through Fontsource under SIL OFL 1.1; attribution and license text ship in `THIRD_PARTY_NOTICES.txt`.
 
 ## Spacing and shape
 

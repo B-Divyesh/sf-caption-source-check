@@ -12,7 +12,7 @@ h1 { margin: 4px 0 0; max-width: 18ch; color: var(--ink); font-size: 22px; line-
 .track-panel { padding: 20px 2px 4px; }
 label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 750; }
 select { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 12px; padding: 0 36px 0 12px; background: var(--porcelain); color: var(--ink); }
-.track-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0 0; }
+.track-facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 10px; margin: 16px 0 0; }
 .track-facts div { min-width: 0; }
 .track-facts dt { color: var(--slate); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
 .track-facts dd { margin: 4px 0 0; font-size: 13px; font-weight: 650; overflow-wrap: anywhere; }

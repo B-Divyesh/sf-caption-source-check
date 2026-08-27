@@ -10,6 +10,7 @@ const statusDetail = document.querySelector<HTMLElement>('#status-detail')!;
 const trackPanel = document.querySelector<HTMLElement>('#track-panel')!;
 const trackSelect = document.querySelector<HTMLSelectElement>('#track-select')!;
 const language = document.querySelector<HTMLElement>('#language')!;
+const trackKind = document.querySelector<HTMLElement>('#track-kind')!;
 const origin = document.querySelector<HTMLElement>('#origin')!;
 const liveStatus = document.querySelector<HTMLElement>('#live-status')!;
 const preview = document.querySelector<HTMLElement>('#preview')!;
@@ -63,6 +64,7 @@ function render(state: ScanState) {
   trackSelect.value = state.selectedTrackId || previous;
   const selected = state.tracks.find((track) => track.id === state.selectedTrackId) || state.tracks[0];
   language.textContent = languageName(selected.language);
+  trackKind.textContent = selected.kind === 'subtitles' ? 'Subtitles' : selected.kind === 'captions' ? 'Captions' : selected.kind;
   origin.textContent = originLabel(selected.origin);
   liveStatus.textContent = state.isLive ? 'Live' : 'Recorded or unknown';
   captionText.textContent = state.activeText || state.transcript.at(-1)?.text || 'Waiting for the next caption…';
