@@ -1,4 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
+import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 
 for (const path of ['/', '/privacy/', '/terms/']) {
@@ -47,4 +48,15 @@ test('keyboard users can skip to content and operate the mobile menu', async ({ 
     await page.keyboard.press('Space');
     await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toBeVisible();
   }
+});
+
+test('reader skip link moves keyboard focus to the live-caption transcript', async ({ page }) => {
+  const reader = readFileSync('entrypoints/reader/index.html', 'utf8')
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/, '');
+  await page.setContent(reader);
+
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link', { name: 'Skip to live captions' })).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#transcript')).toBeFocused();
 });

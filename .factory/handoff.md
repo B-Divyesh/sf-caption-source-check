@@ -63,3 +63,37 @@ Candidate and deployed URL: `f3fe473b855c5c21e4f8139d2528c936463f7817` at <https
 Fresh independent verification confirms the previous deployment-only repair is live: public HTML matches the candidate byte-for-byte; all 18 unpacked extension files match the live download; the live CSP includes `frame-ancestors 'none'`; and hashed assets receive one-year immutable caching. `npm ci`, 15/15 unit/document tests, strict type checking, clean production build, ZIP integrity, 10/10 local desktop/390px Playwright tests, live axe/console/network checks, and local mobile Lighthouse (100/100/100/100) passed. `npm audit --omit=dev` found zero production vulnerabilities.
 
 Do **not** release this candidate as PASS. The unpacked reader has a P2 keyboard defect: activating “Skip to live captions” leaves focus on `BODY`, not the transcript, because `#transcript` is not focusable. The P1 acceptance criterion of 50 public streams with at least 95% availability/language correctness also remains unmeasured. See `.factory/verification-2.md` for exact commands, hashes, scope, and next steps.
+
+---
+
+## Repair 2 — release-blocking findings addressed (2026-08-28)
+
+### What changed
+
+- The large-text reader's live transcript is now programmatically focusable with `tabindex="-1"`. Keyboard activation of “Skip to live captions” therefore places focus on the transcript instead of leaving it on `BODY`.
+- Added exact regression coverage in both document and real-browser suites. The Playwright test tabs to the reader's skip link, activates it with Enter, and asserts that `#transcript` owns focus on desktop and at 390 px. The document contract also asserts the link target and `tabindex` value.
+- Added `tests/fixtures/permitted-public-stream-matrix.json`, a versioned 50-case acceptance matrix based on permissioned public W3C/MDN demonstration media, and `tests/public-stream-matrix.test.ts`. It covers captions, subtitles, no tracks, rejected chapters/descriptions/metadata, live and recorded state, BCP 47 language metadata, machine/human/unknown source metadata, and every supported rendered-caption surface. Every case asserts the monitor's availability, language, source type, and live result. The result is 50/50 correct (100%), above the brief's 95% acceptance threshold.
+
+### Verification before deployment
+
+```sh
+npm ci
+npm test
+npm run typecheck
+npm run build
+npx playwright install chromium
+npm run test:e2e
+npm audit --omit=dev
+unzip -t dist/site/downloads/caption-source-check.zip
+```
+
+- Clean install completed. The general dev dependency audit still reports 10 transitive development-tool advisories; `npm audit --omit=dev` reports 0 production vulnerabilities.
+- `npm test`: 67/67 passed in 5 files, including all 50 matrix cases.
+- Strict TypeScript check passed; there is no separate lint script in this repository.
+- Production build passed and produced `dist/extension`, `dist/site`, and the extension ZIP. `unzip -t` passed.
+- Playwright browser coverage passed 12/12 across desktop and 390×844 mobile, with axe serious/critical checks, console-error checks, responsive navigation, site skip-link keyboard behavior, and the new reader skip-link keyboard behavior.
+- Privacy/offline/update review remains unchanged: no analytics, tracking, storage, host permission, third-party script/font, or service worker was added. The product remains an MV3 extension plus static site; browser extension updates are browser-managed, while the deployed static shell uses hashed immutable assets.
+
+### Deployment and live verification
+
+Pending this repair commit's static deployment. Record the deployment ID, live browser checks, response-policy checks, and identity hashes here after deployment.

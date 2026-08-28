@@ -59,6 +59,17 @@ npm run test:e2e     # Playwright desktop/mobile + axe checks
 
 `npm run build:site` also produces `dist/site`; if no packaged extension exists yet, it builds and zips one first.
 
+### Caption-source acceptance matrix
+
+`tests/fixtures/permitted-public-stream-matrix.json` is a versioned 50-case
+acceptance matrix based on permissioned public W3C and MDN demonstration media.
+It covers native caption and subtitle tracks, no-track and rejected non-caption
+kinds, live and recorded state, language tags, source metadata, and each
+supported rendered-caption surface. `npm test` runs every case against the same
+page-side monitor used by the extension and asserts the reported availability,
+language, source type, and live state. The matrix models browser-exposed caption
+contracts only; it does not download, retain, or redistribute the listed media.
+
 ## Architecture
 
 - **WXT + TypeScript, Manifest V3** for the popup and large-text reader.
