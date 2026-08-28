@@ -73,7 +73,13 @@ export function installCaptionMonitor(): ScanState {
       videos.forEach((video, videoIndex) => {
         Array.from(video.textTracks || []).forEach((track, trackIndex) => {
           const element = Array.from(video.querySelectorAll('track'))[trackIndex];
-          if (!element || element.readyState !== 3) {
+          // TextTrack also represents chapters, descriptions, and metadata.
+          // Those are useful player data, but they are not a caption source a
+          // viewer can follow. Only standard exposed caption/subtitle tracks
+          // satisfy this product's availability contract.
+          const kind = (track.kind || element?.kind || '').trim().toLowerCase();
+          const isUsableCaption = kind === 'captions' || kind === 'subtitles';
+          if (isUsableCaption && (!element || element.readyState !== 3)) {
             trackRecords.push({ id: `${videoIndex}:${trackIndex}`, track, element });
           }
         });

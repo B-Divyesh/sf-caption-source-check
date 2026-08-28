@@ -32,3 +32,19 @@ test('the download and responsive navigation work', async ({ page }, testInfo) =
     await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toBeVisible();
   }
 });
+
+test('keyboard users can skip to content and operate the mobile menu', async ({ page }, testInfo) => {
+  await page.goto('/');
+  await page.keyboard.press('Tab');
+  const skip = page.getByRole('link', { name: 'Skip to main content' });
+  await expect(skip).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('main')).toBeFocused();
+
+  if (testInfo.project.name === 'mobile-390') {
+    const menu = page.getByRole('button', { name: 'Open menu' });
+    await menu.focus();
+    await page.keyboard.press('Space');
+    await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toBeVisible();
+  }
+});

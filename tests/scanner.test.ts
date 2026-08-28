@@ -51,6 +51,35 @@ describe('page caption monitor', () => {
     expect(result).toMatchObject({ available: false, videoCount: 1, tracks: [] });
   });
 
+  it.each(['chapters', 'descriptions', 'metadata'] as const)(
+    'does not mistake a %s TextTrack for an exposed caption source',
+    (kind) => {
+      const video = document.querySelector('video')!;
+      const track = new FakeTrack();
+      track.kind = kind;
+      track.label = `English ${kind}`;
+      Object.defineProperty(video, 'textTracks', { value: [track], configurable: true });
+
+      const result = installCaptionMonitor();
+
+      expect(result).toMatchObject({ available: false, videoCount: 1, tracks: [], selectedTrackId: null });
+      expect(track.mode).toBe('disabled');
+    }
+  );
+
+  it('keeps subtitle tracks available as an official readable source', () => {
+    const video = document.querySelector('video')!;
+    const track = new FakeTrack();
+    track.kind = 'subtitles';
+    Object.defineProperty(video, 'textTracks', { value: [track], configurable: true });
+
+    const result = installCaptionMonitor();
+
+    expect(result).toMatchObject({ available: true, selectedTrackId: '0:0' });
+    expect(result.tracks).toHaveLength(1);
+    expect(result.tracks[0]).toMatchObject({ kind: 'subtitles', active: true });
+  });
+
   it('recognizes a visible player-rendered caption without claiming its source', () => {
     const video = document.querySelector('video')!;
     Object.defineProperty(video, 'textTracks', { value: [], configurable: true });
