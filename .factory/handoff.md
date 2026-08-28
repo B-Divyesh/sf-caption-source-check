@@ -50,7 +50,7 @@ Results:
 - Live browser checks on desktop and 390×844 mobile covered `/`, `/privacy/`, and `/terms/`: zero serious/critical axe findings and zero console/page errors. On both form factors Tab focused the skip link and Enter moved focus to `main`; on mobile, Space opened the navigation menu.
 - Live identity checks matched the deployed artifacts byte-for-byte: index `5d823b561a9492bbfcf151756b1eb612f48f6d790534c86ebe18d170a9fbbfa6`, privacy `aa00b23626f10c6318933e6e68c4bedcd6997d64ce2f2eb6c08f6ecf6c2a2d0d`, terms `f03ec262e9bfe5f99b40ba746fbed1127bf217925e37e20b797cdd655f921f39`, and extension ZIP `df7de85feb6f737a4b41e02100343ea3fe1ad2ad830074f9ca8150d8257b7b80`.
 
-## Known gap
+## Known gap at repair 1 (historical)
 
 The brief's 50-permitted-public-stream / 95% benchmark is still unmeasured. It needs a maintained, permitted stream fixture matrix before store/release publication. Cross-origin iframes, closed shadow roots, and proprietary caption canvases remain intentional boundaries: this product does not bypass them.
 
@@ -96,4 +96,10 @@ unzip -t dist/site/downloads/caption-source-check.zip
 
 ### Deployment and live verification
 
-Pending this repair commit's static deployment. Record the deployment ID, live browser checks, response-policy checks, and identity hashes here after deployment.
+- Repair implementation commit: `d739dda277b74cbce2c62111cf0da5ca819584c5`, pushed to `origin/main` before deployment.
+- Deployed with `/opt/fleet/lib/deploy-static.sh caption-source-check dist/site`. Azure Static Web Apps deployment `ef07bc04-2d9b-4669-a194-d9688f61c1fa` succeeded; the custom domain was Ready and HTTPS returned 200.
+- `/opt/fleet/lib/verify-url.sh` recorded a 772 ms network-idle load with no console/page errors; title, `lang=en`, one `h1`, a `main` landmark, and image/button labels all passed.
+- Independent live Chromium checks on `/`, `/privacy/`, and `/terms/` at desktop (1440×1000) and 390×844 mobile found 0 axe serious/critical violations, 0 console/page errors, no third-party requests, one `h1`, one `main`, correct `lang`, titles, and no horizontal overflow.
+- Live response policy is present: `Content-Security-Policy: default-src 'self'; …; frame-ancestors 'none'`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Content-Type-Options: nosniff`, and HSTS. The hashed JavaScript response has `Cache-Control: public, max-age=31536000, immutable`; the ZIP has the intended one-hour policy.
+- Live identity matches the local production build byte-for-byte: index `5d823b561a9492bbfcf151756b1eb612f48f6d790534c86ebe18d170a9fbbfa6`, privacy `aa00b23626f10c6318933e6e68c4bedcd6997d64ce2f2eb6c08f6ecf6c2a2d0d`, terms `f03ec262e9bfe5f99b40ba746fbed1127bf217925e37e20b797cdd655f921f39`, and the ZIP `cdf6315730a6ad50e7c6f6cc5f2afe987cd396ea617f76cd7e04fb81c8fcf148`. Unpacked ZIP contents also matched exactly.
+- Local mobile Lighthouse emitted a complete 100/100/100/100 report: FCP 1.4 s, LCP 1.4 s, TBT 0 ms, CLS 0.001, total transfer 121 KiB. The Lighthouse CLI then reported a Chromium post-run tab crash while collecting its final screenshot, but the persisted JSON report contains those completed metrics.
