@@ -53,3 +53,13 @@ Results:
 ## Known gap
 
 The brief's 50-permitted-public-stream / 95% benchmark is still unmeasured. It needs a maintained, permitted stream fixture matrix before store/release publication. Cross-origin iframes, closed shadow roots, and proprietary caption canvases remain intentional boundaries: this product does not bypass them.
+
+---
+
+## Independent verification 2 — FAIL (2026-08-28)
+
+Candidate and deployed URL: `f3fe473b855c5c21e4f8139d2528c936463f7817` at <https://caption-source-check.sociobot.in>.
+
+Fresh independent verification confirms the previous deployment-only repair is live: public HTML matches the candidate byte-for-byte; all 18 unpacked extension files match the live download; the live CSP includes `frame-ancestors 'none'`; and hashed assets receive one-year immutable caching. `npm ci`, 15/15 unit/document tests, strict type checking, clean production build, ZIP integrity, 10/10 local desktop/390px Playwright tests, live axe/console/network checks, and local mobile Lighthouse (100/100/100/100) passed. `npm audit --omit=dev` found zero production vulnerabilities.
+
+Do **not** release this candidate as PASS. The unpacked reader has a P2 keyboard defect: activating “Skip to live captions” leaves focus on `BODY`, not the transcript, because `#transcript` is not focusable. The P1 acceptance criterion of 50 public streams with at least 95% availability/language correctness also remains unmeasured. See `.factory/verification-2.md` for exact commands, hashes, scope, and next steps.
