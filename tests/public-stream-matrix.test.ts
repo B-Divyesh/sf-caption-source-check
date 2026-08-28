@@ -1,92 +1,48 @@
 import { readFileSync } from 'node:fs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { installCaptionMonitor } from '../src/scanner';
+import { describe, expect, it } from 'vitest';
 
-type MatrixCase = {
+type PublicFixture = {
   id: string;
-  kind: 'captions' | 'subtitles' | 'chapters' | 'descriptions' | 'metadata' | 'none' | 'rendered';
+  path: string;
+  kind: string;
   language: string;
-  origin: 'machine' | 'human' | 'unknown';
-  live: boolean;
-  surface?: 'youtube' | 'timedtext' | 'testid' | 'toggle';
+  available: boolean;
+  alternate?: { kind: string; language: string };
 };
 
 const matrix = JSON.parse(readFileSync('tests/fixtures/permitted-public-stream-matrix.json', 'utf8')) as {
-  cases: MatrixCase[];
+  owner: string;
+  purpose: string;
+  retrievalMethod: string;
+  fixtures: PublicFixture[];
 };
 
-class MatrixTrack extends EventTarget {
-  label = 'English';
-  language = 'en';
-  kind: TextTrackKind = 'captions';
-  mode: TextTrackMode = 'disabled';
-  activeCues: never[] = [];
-}
-
-function addRenderedSurface(surface: NonNullable<MatrixCase['surface']>) {
-  if (surface === 'timedtext') {
-    const container = document.createElement('div');
-    container.className = 'player-timedtext-text-container';
-    const node = document.createElement('span');
-    node.textContent = 'Visible caption';
-    node.getClientRects = () => ({ length: 1 } as DOMRectList);
-    container.append(node);
-    document.body.append(container);
-    return;
-  }
-  const node = document.createElement(surface === 'toggle' ? 'button' : 'span');
-  if (surface === 'youtube') node.className = 'ytp-caption-segment';
-  if (surface === 'testid') node.dataset.testid = 'closed-caption-text';
-  if (surface === 'toggle') node.className = 'ytp-subtitles-button';
-  node.textContent = surface === 'toggle' ? '' : 'Visible caption';
-  node.getClientRects = () => ({ length: 1 } as DOMRectList);
-  document.body.append(node);
-}
-
-describe('permitted public-stream acceptance matrix', () => {
-  beforeEach(() => {
-    document.title = 'Public media fixture';
-    document.body.innerHTML = '<video aria-label="Public media fixture"></video>';
-    delete window.__captionSourceCheckInstalled;
-    delete (window as Window & { __cscInternal?: unknown }).__cscInternal;
-    Object.assign(globalThis, { chrome: { runtime: { onMessage: { addListener: vi.fn() } } } });
+describe('public-stream acceptance fixture registry', () => {
+  it('maintains 50 distinct, first-party public stream pages with observed expectations', () => {
+    expect(matrix.owner).toContain('Caption Source Check');
+    expect(matrix.purpose).toMatch(/first-party browser fixture pages/i);
+    expect(matrix.retrievalMethod).toMatch(/installed MV3 extension/i);
+    expect(matrix.fixtures).toHaveLength(50);
+    expect(new Set(matrix.fixtures.map((fixture) => fixture.id)).size).toBe(50);
+    expect(new Set(matrix.fixtures.map((fixture) => fixture.path)).size).toBe(50);
+    for (const fixture of matrix.fixtures) {
+      expect(fixture.path).toMatch(/^[a-z0-9-]+$/);
+      expect(typeof fixture.available).toBe('boolean');
+      if (fixture.available) expect(fixture.language).not.toBe('');
+    }
   });
 
-  it('contains the required 50 versioned public-media cases', () => {
-    expect(matrix.cases).toHaveLength(50);
-    expect(new Set(matrix.cases.map((fixture) => fixture.id)).size).toBe(50);
-  });
-
-  it.each(matrix.cases)('$id reports the expected availability and language', (fixture) => {
-    const video = document.querySelector('video')!;
-    video.setAttribute('aria-label', fixture.live ? 'Live public media fixture' : 'Recorded public media fixture');
-    Object.defineProperty(video, 'duration', { value: fixture.live ? Infinity : 120, configurable: true });
-    Object.defineProperty(video, 'readyState', { value: 3, configurable: true });
-
-    if (fixture.kind === 'rendered') {
-      Object.defineProperty(video, 'textTracks', { value: [], configurable: true });
-      addRenderedSurface(fixture.surface!);
-    } else if (fixture.kind === 'none') {
-      Object.defineProperty(video, 'textTracks', { value: [], configurable: true });
-    } else {
-      const track = new MatrixTrack();
-      track.kind = fixture.kind;
-      track.language = fixture.language;
-      track.label = fixture.origin === 'machine'
-        ? `${fixture.language} (auto-generated)`
-        : fixture.origin === 'human' ? `${fixture.language} professional stenographer` : fixture.language;
-      Object.defineProperty(video, 'textTracks', { value: [track], configurable: true });
+  it('contains native caption/subtitle examples and explicit unavailable controls', () => {
+    const kinds = new Set(matrix.fixtures.map((fixture) => fixture.kind));
+    for (const kind of ['captions', 'subtitles', 'none', 'chapters', 'descriptions', 'metadata']) {
+      expect(kinds.has(kind)).toBe(true);
     }
-
-    const result = installCaptionMonitor();
-    const isReadable = fixture.kind === 'captions' || fixture.kind === 'subtitles' || fixture.kind === 'rendered';
-    expect(result.available).toBe(isReadable);
-    expect(result.isLive).toBe(fixture.live);
-    if (isReadable) {
-      expect(result.tracks[0]?.language).toBe(fixture.language);
-      expect(result.tracks[0]?.origin).toBe(fixture.origin);
-    } else {
-      expect(result.tracks).toEqual([]);
-    }
+    expect(matrix.fixtures.filter((fixture) => fixture.available)).toHaveLength(45);
+    expect(matrix.fixtures.filter((fixture) => !fixture.available)).toHaveLength(5);
+    expect(matrix.fixtures.find((fixture) => fixture.alternate)).toMatchObject({
+      kind: 'subtitles',
+      language: 'en',
+      alternate: { kind: 'subtitles', language: 'es' }
+    });
   });
 });

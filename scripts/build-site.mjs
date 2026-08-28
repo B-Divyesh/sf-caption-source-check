@@ -2,6 +2,8 @@ import { cp, mkdir, readdir } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 
+execFileSync('node', ['scripts/generate-public-stream-fixtures.mjs'], { stdio: 'inherit' });
+
 let files = [];
 try {
   files = await readdir('.output');
