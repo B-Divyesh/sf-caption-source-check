@@ -43,7 +43,12 @@ Results:
 
 ## Deployment and live checks
 
-The static deployment is performed with `/opt/fleet/lib/deploy-static.sh caption-source-check dist/site` after the repair commit is pushed. Record the resulting commit and live HTTPS/header verification here after deployment.
+- Repair implementation commit: `bfe31deb83a1306f9cb165910de6fc18114ac3c5` (pushed to `origin/main`).
+- Deployed with `/opt/fleet/lib/deploy-static.sh caption-source-check dist/site`. Azure Static Web Apps deployment `89ece65b-7f74-4422-ac20-d6aebdd9fb0b` succeeded and the custom domain was Ready.
+- `https://caption-source-check.sociobot.in/` returned HTTPS 200. `/opt/fleet/lib/verify-url.sh` recorded a 1,183 ms network-idle load, no console/page errors, a title, `lang=en`, one `h1`, a `main` landmark, and no images without alt text.
+- The live root sends the enforcing policy `default-src 'self' ... frame-ancestors 'none'`, plus `Referrer-Policy: strict-origin-when-cross-origin` and `X-Content-Type-Options: nosniff`. The live hashed JavaScript and self-hosted font send `Cache-Control: public, max-age=31536000, immutable`; the extension download sends the intended one-hour cache policy and `nosniff`.
+- Live browser checks on desktop and 390×844 mobile covered `/`, `/privacy/`, and `/terms/`: zero serious/critical axe findings and zero console/page errors. On both form factors Tab focused the skip link and Enter moved focus to `main`; on mobile, Space opened the navigation menu.
+- Live identity checks matched the deployed artifacts byte-for-byte: index `5d823b561a9492bbfcf151756b1eb612f48f6d790534c86ebe18d170a9fbbfa6`, privacy `aa00b23626f10c6318933e6e68c4bedcd6997d64ce2f2eb6c08f6ecf6c2a2d0d`, terms `f03ec262e9bfe5f99b40ba746fbed1127bf217925e37e20b797cdd655f921f39`, and extension ZIP `df7de85feb6f737a4b41e02100343ea3fe1ad2ad830074f9ca8150d8257b7b80`.
 
 ## Known gap
 
